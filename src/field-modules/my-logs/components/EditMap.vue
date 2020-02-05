@@ -1,8 +1,4 @@
 <template>
-  <!--
-  I need to build the wkt array in a method.
-  For now I just added [] around the single, hard-coded wkt.
--->
   <Map
     id="map"
     :overrideStyles="{ height: 'calc(100vh - 3rem)' }"
@@ -12,11 +8,7 @@
       controls: (defs) => defs.filter(def => def.constructor.name !== 'FullScreen'),
       units: systemOfMeasurement,
     }"
-    :wkt="[{
-      title: 'movement',
-      wkt: logs[currentLogIndex].movement.data.geometry,
-      color: 'orange',
-    }]"
+    :wkt=mapLayers
     :geojson="{
       title: 'areas',
       url: areaGeoJSON,
@@ -41,6 +33,28 @@ export default {
       const index = this.logs.findIndex(log => log.localID === +this.id);
       return index >= 0 ? index : 0;
     },
+    /*
+    Assemble layers for display
+    */
+    mapLayers() {
+      const movement = {
+        title: 'movement',
+        wkt: this.logs[this.currentLogIndex].movement.data.geometry
+          ? this.logs[this.currentLogIndex].movement.data.geometry
+          : null,
+        color: 'orange',
+        visible: true,
+      };
+      const previous = {
+        title: 'previous',
+        wkt: this.logs[this.currentLogIndex].geofield.data.length > 0
+          ? this.logs[this.currentLogIndex].geofield.data[0].geom
+          : null,
+        color: 'blue',
+        visible: true,
+      };
+      return [movement, previous];
+    },
   },
   methods: {
     updateMovement(wkt) {
@@ -50,7 +64,7 @@ export default {
             area: this.logs[this.currentLogIndex].movement.data.area,
             geometry: wkt,
           },
-          changed: (Date.now() / 1000).toFixed(0)
+          changed: (Date.now() / 1000).toFixed(0),
         },
         isCachedLocally: false,
         wasPushedToServer: false,
@@ -58,7 +72,7 @@ export default {
       this.$store.commit('updateLog', { index: this.currentLogIndex, props });
     },
   },
-}
+};
 </script>
 
 <style scoped>

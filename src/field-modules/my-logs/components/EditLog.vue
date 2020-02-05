@@ -502,10 +502,6 @@
     </div>
 
     <router-link :to="{ name: 'edit-map' }">
-      <!--
-      I need to build the wkt array in a method.
-      For now I just added [] around the single, hard-coded wkt.
-    -->
       <Map
         id="map"
         :overrideStyles="{ height: '90vw' }"
@@ -947,10 +943,21 @@ export default {
     mapLayers() {
       const movement = {
         title: 'movement',
-        wkt: this.logs[this.currentLogIndex].movement.data.geometry,
+        wkt: this.logs[this.currentLogIndex].movement.data.geometry
+          ? this.logs[this.currentLogIndex].movement.data.geometry
+          : null,
         color: 'orange',
+        visible: true,
       };
-      return [movement];
+      const previous = {
+        title: 'previous',
+        wkt: this.logs[this.currentLogIndex].geofield.data.length > 0
+          ? this.logs[this.currentLogIndex].geofield.data[0].geom
+          : null,
+        color: 'blue',
+        visible: true,
+      };
+      return [movement, previous];
     },
   },
 
