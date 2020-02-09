@@ -22,12 +22,12 @@ import Map from '@/components/Map';
 export default {
   name: 'EditMap',
   components: { Map },
-  props: [ 'logs', 'id', 'systemOfMeasurement'],
+  props: ['logs', 'id', 'systemOfMeasurement'],
   computed: {
     areaGeoJSON() {
       return (process.env.NODE_ENV === 'development')
         ? 'http://localhost:8080/farm/areas/geojson/all'
-        : `${localStorage.getItem('host')}/farm/areas/geojson/all`
+        : `${localStorage.getItem('host')}/farm/areas/geojson/all`;
     },
     currentLogIndex() {
       const index = this.logs.findIndex(log => log.localID === +this.id);
